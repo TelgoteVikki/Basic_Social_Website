@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+   
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+   
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    <title>Document</title>
+    <script>
+
+    </script>
+    <style>
+        .center {
+            margin: auto;
+            width: 100%;
+            border: 1px solid grey;
+            padding: 10px;
+        }
+        .container{
+            width: 29%;
+            padding: 10px;
+            background-color: lightcyan;
+            border: 2px solid black;
+            float: left;
+            margin: 13px;
+            display: table-cell;
+        }
+        .postbox{
+            width: 100%;
+            display: inline-block;
+        }
+        .far{
+            height: 25px;
+        }
+        .fas{
+            height: 25px;
+        }
+       
+    </style>
+</head>
+
+<body onload="oldVote('{{id}}')">
+    <div class="center">
+        <p>All Posts</p>
+        <div class="postbox">
+            {% for postl in context %}
+            <div class="container">
+            <p>{{postl.postName}}</p>
+                <div class="dlbtn">
+                    <a>
+                        <button class="far fa-thumbs-up" id='{{postl.id}}upc' onclick="upvote('{{id}}','{{postl.id}}up','{{postl.id}}upc')"></button>
+                        <span class="like-no" id='{{postl.id}}up'>0</span>
+                    </a>
+                    <a>
+                        <button class="far fa-thumbs-down" id='{{postl.id}}downc' onclick="downvote('{{id}}','{{postl.id}}down','{{postl.id}}downc')"></button>
+                        <span class="like-no"id='{{postl.id}}down'>0</span>
+                    </a>
+                   
+                </div>
+            
+
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+
+<script>
+    function oldVote(userid){
+
+        $.ajax({
+      type: 'POST',
+      url: '/olddata'+'/'+userid,
+      data: {'userid_Olddata':userid },
+      success:function(resp) {
+        //console.log("responce");
+        //console.log(resp);
+        for (var i = 0; i < resp.length; i++) {
+        var childArray = resp[i];
+            //console.log(childArray)
+            var elid=resp[i][0].toString()
+            //console.log(resp[i][0])
+            document.getElementById(elid+'up').innerHTML=resp[i][1]
+            document.getElementById(elid+'down').innerHTML=resp[i][2]
+           
+        }
+        
+       
+       },
+       error: function (error) {
+        console.log(`Error ${error}`);
+    },
+  });
+    }
+    function upvote(userid,postid,idc) {
+  //console.log(post1)
+  document.getElementById(idc).className ="fas fa-thumbs-up" //for change class name
+   var postidmain=postid.match(/\d+/) //for get integer from string
+   var counter=document.getElementById(postid).innerHTML;
+    //console.log(userid)
+    document.getElementById(postid).innerHTML = parseInt (counter)+1;
+
+    $.ajax({
+      type: 'POST',
+      url: '/upvotedata1'+'/'+userid+'/'+postidmain,
+      data: {'up_votedata':parseInt (counter)+1 },
+      success:function(resp) {
+       // console.log("responce");
+       // console.log(resp);
+      
+        
+       },
+       error: function (error) {
+        console.log(`Error ${error}`);
+    },
+  });
+}
+
+
+function downvote(userid,postid,idc) {
+ console.log(idc)
+  document.getElementById(idc).className ="fas fa-thumbs-down" //for change class name
+   var postidmain=postid.match(/\d+/) //for get integer from string
+   //console.log(postidmain)
+   var counter=document.getElementById(postid).innerHTML;
+   // console.log(userid)
+    document.getElementById(postid).innerHTML = parseInt (counter)+1;
+    $.ajax({
+      type: 'POST',
+      url: '/upvotedata1'+'/'+userid+'/'+postidmain,
+      data: {'down_votedata':parseInt (counter)+1 },
+      success:function(resp) {
+       // console.log("responce");
+        //console.log(resp);
+       
+        
+       },
+       error: function (error) {
+        console.log(`Error ${error}`);
+    },
+  });
+}
+
+
+</script>
+
+</body>
+</html>
